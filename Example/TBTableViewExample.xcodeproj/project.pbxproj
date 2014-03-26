@@ -1,0 +1,405 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		5055C4F218E32A7A00DF670F /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5055C4F118E32A7A00DF670F /* Cocoa.framework */; };
+		5055C4FC18E32A7A00DF670F /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5055C4FA18E32A7A00DF670F /* InfoPlist.strings */; };
+		5055C4FE18E32A7A00DF670F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5055C4FD18E32A7A00DF670F /* main.m */; };
+		5055C50218E32A7A00DF670F /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 5055C50018E32A7A00DF670F /* Credits.rtf */; };
+		5055C50518E32A7A00DF670F /* TBDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 5055C50418E32A7A00DF670F /* TBDocument.m */; };
+		5055C50818E32A7A00DF670F /* TBDocument.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5055C50618E32A7A00DF670F /* TBDocument.xib */; };
+		5055C50B18E32A7A00DF670F /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5055C50918E32A7A00DF670F /* MainMenu.xib */; };
+		5055C52218E32ABE00DF670F /* BlockTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = 5055C51118E32ABE00DF670F /* BlockTimer.m */; };
+		5055C52318E32ABE00DF670F /* PlaceholderLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 5055C51218E32ABE00DF670F /* PlaceholderLabel.m */; };
+		5055C52418E32ABE00DF670F /* TableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5055C51318E32ABE00DF670F /* TableView.m */; };
+		5055C52518E32ABE00DF670F /* TableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5055C51418E32ABE00DF670F /* TableViewCell.m */; };
+		5055C52618E32ABE00DF670F /* TableViewSection.m in Sources */ = {isa = PBXBuildFile; fileRef = 5055C51518E32ABE00DF670F /* TableViewSection.m */; };
+		5055C52718E32ABE00DF670F /* NSIndexPath+additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 5055C51818E32ABE00DF670F /* NSIndexPath+additions.m */; };
+		5055C52818E32ABE00DF670F /* NSNotificationCenter+additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 5055C51A18E32ABE00DF670F /* NSNotificationCenter+additions.m */; };
+		5055C52918E32ABE00DF670F /* NSView+additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 5055C51C18E32ABE00DF670F /* NSView+additions.m */; };
+		5055C52F18E3316800DF670F /* smile_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = 5055C52B18E3316800DF670F /* smile_selected.png */; };
+		5055C53018E3316800DF670F /* smile_selected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5055C52C18E3316800DF670F /* smile_selected@2x.png */; };
+		5055C53118E3316800DF670F /* smile.png in Resources */ = {isa = PBXBuildFile; fileRef = 5055C52D18E3316800DF670F /* smile.png */; };
+		5055C53218E3316800DF670F /* smile@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5055C52E18E3316800DF670F /* smile@2x.png */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		5055C4EE18E32A7A00DF670F /* TBTableViewExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TBTableViewExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5055C4F118E32A7A00DF670F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		5055C4F418E32A7A00DF670F /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		5055C4F518E32A7A00DF670F /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		5055C4F618E32A7A00DF670F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		5055C4F918E32A7A00DF670F /* TBTableViewExample-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "TBTableViewExample-Info.plist"; sourceTree = "<group>"; };
+		5055C4FB18E32A7A00DF670F /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		5055C4FD18E32A7A00DF670F /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		5055C4FF18E32A7A00DF670F /* TBTableViewExample-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TBTableViewExample-Prefix.pch"; sourceTree = "<group>"; };
+		5055C50118E32A7A00DF670F /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
+		5055C50318E32A7A00DF670F /* TBDocument.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TBDocument.h; sourceTree = "<group>"; };
+		5055C50418E32A7A00DF670F /* TBDocument.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TBDocument.m; sourceTree = "<group>"; };
+		5055C50718E32A7A00DF670F /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/TBDocument.xib; sourceTree = "<group>"; };
+		5055C50A18E32A7A00DF670F /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		5055C51118E32ABE00DF670F /* BlockTimer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BlockTimer.m; path = ../../BlockTimer.m; sourceTree = "<group>"; };
+		5055C51218E32ABE00DF670F /* PlaceholderLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PlaceholderLabel.m; path = ../../PlaceholderLabel.m; sourceTree = "<group>"; };
+		5055C51318E32ABE00DF670F /* TableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TableView.m; path = ../../TableView.m; sourceTree = "<group>"; };
+		5055C51418E32ABE00DF670F /* TableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TableViewCell.m; path = ../../TableViewCell.m; sourceTree = "<group>"; };
+		5055C51518E32ABE00DF670F /* TableViewSection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TableViewSection.m; path = ../../TableViewSection.m; sourceTree = "<group>"; };
+		5055C51718E32ABE00DF670F /* NSIndexPath+additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSIndexPath+additions.h"; sourceTree = "<group>"; };
+		5055C51818E32ABE00DF670F /* NSIndexPath+additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSIndexPath+additions.m"; sourceTree = "<group>"; };
+		5055C51918E32ABE00DF670F /* NSNotificationCenter+additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSNotificationCenter+additions.h"; sourceTree = "<group>"; };
+		5055C51A18E32ABE00DF670F /* NSNotificationCenter+additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSNotificationCenter+additions.m"; sourceTree = "<group>"; };
+		5055C51B18E32ABE00DF670F /* NSView+additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSView+additions.h"; sourceTree = "<group>"; };
+		5055C51C18E32ABE00DF670F /* NSView+additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSView+additions.m"; sourceTree = "<group>"; };
+		5055C51D18E32ABE00DF670F /* BlockTimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockTimer.h; path = ../../BlockTimer.h; sourceTree = "<group>"; };
+		5055C51E18E32ABE00DF670F /* PlaceholderLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PlaceholderLabel.h; path = ../../PlaceholderLabel.h; sourceTree = "<group>"; };
+		5055C51F18E32ABE00DF670F /* TableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TableView.h; path = ../../TableView.h; sourceTree = "<group>"; };
+		5055C52018E32ABE00DF670F /* TableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TableViewCell.h; path = ../../TableViewCell.h; sourceTree = "<group>"; };
+		5055C52118E32ABE00DF670F /* TableViewSection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TableViewSection.h; path = ../../TableViewSection.h; sourceTree = "<group>"; };
+		5055C52B18E3316800DF670F /* smile_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = smile_selected.png; sourceTree = "<group>"; };
+		5055C52C18E3316800DF670F /* smile_selected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "smile_selected@2x.png"; sourceTree = "<group>"; };
+		5055C52D18E3316800DF670F /* smile.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = smile.png; sourceTree = "<group>"; };
+		5055C52E18E3316800DF670F /* smile@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "smile@2x.png"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		5055C4EB18E32A7A00DF670F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5055C4F218E32A7A00DF670F /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		5055C4E518E32A7A00DF670F = {
+			isa = PBXGroup;
+			children = (
+				5055C4F718E32A7A00DF670F /* TBTableViewExample */,
+				5055C4F018E32A7A00DF670F /* Frameworks */,
+				5055C4EF18E32A7A00DF670F /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		5055C4EF18E32A7A00DF670F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5055C4EE18E32A7A00DF670F /* TBTableViewExample.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5055C4F018E32A7A00DF670F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				5055C4F118E32A7A00DF670F /* Cocoa.framework */,
+				5055C4F318E32A7A00DF670F /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		5055C4F318E32A7A00DF670F /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				5055C4F418E32A7A00DF670F /* AppKit.framework */,
+				5055C4F518E32A7A00DF670F /* CoreData.framework */,
+				5055C4F618E32A7A00DF670F /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		5055C4F718E32A7A00DF670F /* TBTableViewExample */ = {
+			isa = PBXGroup;
+			children = (
+				5055C50318E32A7A00DF670F /* TBDocument.h */,
+				5055C50418E32A7A00DF670F /* TBDocument.m */,
+				5055C50618E32A7A00DF670F /* TBDocument.xib */,
+				5055C50918E32A7A00DF670F /* MainMenu.xib */,
+				5055C52A18E32AD200DF670F /* TBTableView */,
+				5055C4F818E32A7A00DF670F /* Supporting Files */,
+			);
+			path = TBTableViewExample;
+			sourceTree = "<group>";
+		};
+		5055C4F818E32A7A00DF670F /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				5055C52D18E3316800DF670F /* smile.png */,
+				5055C52E18E3316800DF670F /* smile@2x.png */,
+				5055C52B18E3316800DF670F /* smile_selected.png */,
+				5055C52C18E3316800DF670F /* smile_selected@2x.png */,
+				5055C4F918E32A7A00DF670F /* TBTableViewExample-Info.plist */,
+				5055C4FA18E32A7A00DF670F /* InfoPlist.strings */,
+				5055C4FD18E32A7A00DF670F /* main.m */,
+				5055C4FF18E32A7A00DF670F /* TBTableViewExample-Prefix.pch */,
+				5055C50018E32A7A00DF670F /* Credits.rtf */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		5055C51618E32ABE00DF670F /* Additions */ = {
+			isa = PBXGroup;
+			children = (
+				5055C51718E32ABE00DF670F /* NSIndexPath+additions.h */,
+				5055C51818E32ABE00DF670F /* NSIndexPath+additions.m */,
+				5055C51918E32ABE00DF670F /* NSNotificationCenter+additions.h */,
+				5055C51A18E32ABE00DF670F /* NSNotificationCenter+additions.m */,
+				5055C51B18E32ABE00DF670F /* NSView+additions.h */,
+				5055C51C18E32ABE00DF670F /* NSView+additions.m */,
+			);
+			name = Additions;
+			path = ../../Additions;
+			sourceTree = "<group>";
+		};
+		5055C52A18E32AD200DF670F /* TBTableView */ = {
+			isa = PBXGroup;
+			children = (
+				5055C51D18E32ABE00DF670F /* BlockTimer.h */,
+				5055C51118E32ABE00DF670F /* BlockTimer.m */,
+				5055C51E18E32ABE00DF670F /* PlaceholderLabel.h */,
+				5055C51218E32ABE00DF670F /* PlaceholderLabel.m */,
+				5055C51F18E32ABE00DF670F /* TableView.h */,
+				5055C51318E32ABE00DF670F /* TableView.m */,
+				5055C52018E32ABE00DF670F /* TableViewCell.h */,
+				5055C51418E32ABE00DF670F /* TableViewCell.m */,
+				5055C52118E32ABE00DF670F /* TableViewSection.h */,
+				5055C51518E32ABE00DF670F /* TableViewSection.m */,
+				5055C51618E32ABE00DF670F /* Additions */,
+			);
+			name = TBTableView;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		5055C4ED18E32A7A00DF670F /* TBTableViewExample */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5055C50E18E32A7A00DF670F /* Build configuration list for PBXNativeTarget "TBTableViewExample" */;
+			buildPhases = (
+				5055C4EA18E32A7A00DF670F /* Sources */,
+				5055C4EB18E32A7A00DF670F /* Frameworks */,
+				5055C4EC18E32A7A00DF670F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TBTableViewExample;
+			productName = TBTableViewExample;
+			productReference = 5055C4EE18E32A7A00DF670F /* TBTableViewExample.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		5055C4E618E32A7A00DF670F /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = TB;
+				LastUpgradeCheck = 0460;
+				ORGANIZATIONNAME = Lisacintosh;
+			};
+			buildConfigurationList = 5055C4E918E32A7A00DF670F /* Build configuration list for PBXProject "TBTableViewExample" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 5055C4E518E32A7A00DF670F;
+			productRefGroup = 5055C4EF18E32A7A00DF670F /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				5055C4ED18E32A7A00DF670F /* TBTableViewExample */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		5055C4EC18E32A7A00DF670F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5055C4FC18E32A7A00DF670F /* InfoPlist.strings in Resources */,
+				5055C50218E32A7A00DF670F /* Credits.rtf in Resources */,
+				5055C50818E32A7A00DF670F /* TBDocument.xib in Resources */,
+				5055C50B18E32A7A00DF670F /* MainMenu.xib in Resources */,
+				5055C52F18E3316800DF670F /* smile_selected.png in Resources */,
+				5055C53018E3316800DF670F /* smile_selected@2x.png in Resources */,
+				5055C53118E3316800DF670F /* smile.png in Resources */,
+				5055C53218E3316800DF670F /* smile@2x.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		5055C4EA18E32A7A00DF670F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5055C4FE18E32A7A00DF670F /* main.m in Sources */,
+				5055C50518E32A7A00DF670F /* TBDocument.m in Sources */,
+				5055C52218E32ABE00DF670F /* BlockTimer.m in Sources */,
+				5055C52318E32ABE00DF670F /* PlaceholderLabel.m in Sources */,
+				5055C52418E32ABE00DF670F /* TableView.m in Sources */,
+				5055C52518E32ABE00DF670F /* TableViewCell.m in Sources */,
+				5055C52618E32ABE00DF670F /* TableViewSection.m in Sources */,
+				5055C52718E32ABE00DF670F /* NSIndexPath+additions.m in Sources */,
+				5055C52818E32ABE00DF670F /* NSNotificationCenter+additions.m in Sources */,
+				5055C52918E32ABE00DF670F /* NSView+additions.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		5055C4FA18E32A7A00DF670F /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5055C4FB18E32A7A00DF670F /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		5055C50018E32A7A00DF670F /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5055C50118E32A7A00DF670F /* en */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+		5055C50618E32A7A00DF670F /* TBDocument.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5055C50718E32A7A00DF670F /* en */,
+			);
+			name = TBDocument.xib;
+			sourceTree = "<group>";
+		};
+		5055C50918E32A7A00DF670F /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5055C50A18E32A7A00DF670F /* en */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		5055C50C18E32A7A00DF670F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		5055C50D18E32A7A00DF670F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		5055C50F18E32A7A00DF670F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "TBTableViewExample/TBTableViewExample-Prefix.pch";
+				INFOPLIST_FILE = "TBTableViewExample/TBTableViewExample-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		5055C51018E32A7A00DF670F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "TBTableViewExample/TBTableViewExample-Prefix.pch";
+				INFOPLIST_FILE = "TBTableViewExample/TBTableViewExample-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		5055C4E918E32A7A00DF670F /* Build configuration list for PBXProject "TBTableViewExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5055C50C18E32A7A00DF670F /* Debug */,
+				5055C50D18E32A7A00DF670F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5055C50E18E32A7A00DF670F /* Build configuration list for PBXNativeTarget "TBTableViewExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5055C50F18E32A7A00DF670F /* Debug */,
+				5055C51018E32A7A00DF670F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 5055C4E618E32A7A00DF670F /* Project object */;
+}
