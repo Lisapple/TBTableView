@@ -1,0 +1,7 @@
+pod "TBTableView", :path => "../TBTableView.podspec"
+
+target "Demo" do
+end
+
+target "DemoTests" do
+end
