@@ -18,10 +18,11 @@
 	return [NSIndexPath indexPathWithIndexes:indexes length:2];
 }
 
-- (id)initWithSection:(NSUInteger)section row:(NSUInteger)row
+- (instancetype)initWithSection:(NSUInteger)section row:(NSUInteger)row
 {
 	NSUInteger indexes[2] = { section, row };
-	return [[NSIndexPath alloc] initWithIndexes:indexes length:2];
+	if ((self = [self initWithIndexes:indexes length:2])) { }
+	return self;
 }
 
 - (NSUInteger)section

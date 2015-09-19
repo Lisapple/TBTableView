@@ -57,7 +57,7 @@
 @synthesize selected = _selected;
 @synthesize colorStyle = _colorStyle, selectedColorStyle = _selectedColorStyle;
 
-- (id)initWithStyle:(TableViewCellStyle)cellStyle reusableIdentifier:(NSString *)cellID
+- (instancetype)initWithStyle:(TableViewCellStyle)cellStyle reusableIdentifier:(NSString *)cellID
 {
 	NSRect frame = NSMakeRect(0., 0., 100., 17.);
 	if ((self = [super initWithFrame:frame])) {
@@ -75,7 +75,7 @@
 		frame = NSMakeRect(10. /*4. * 2. + 24.*/, (int)(self.frame.size.height - height) / 2.,
 						   self.frame.size.width - (2. * 4. + 24.) - 20., height);
 		_textField = [[TableViewCellTextField alloc] initWithFrame:frame];
-		[_textField.cell setControlSize:NSMiniControlSize];
+		_textField.cell.controlSize = NSMiniControlSize;
 		_textField.bezelStyle = NSTextFieldSquareBezel;
 		[_textField setBezeled:NO];
 		[_textField setBordered:NO];
@@ -110,8 +110,9 @@
 - (void)setTitle:(NSString *)title
 {
 	_title = title;
-	
-	_textField.stringValue = _title;
+	if (title) {
+		_textField.stringValue = title;
+	}
 }
 
 - (void)setImage:(NSImage *)image
@@ -120,7 +121,7 @@
 	
 	_imageView.image = _image;
 	
-	[_imageView setHidden:(image == nil)];
+	_imageView.hidden = (image == nil);
 	NSRect rect = _textField.frame;
 	rect.origin.x = (image == nil)? 10.: (4. * 2. + 24.);// Fix to 4px left if no image, else fix 4px to the imageView
 	_textField.frame = rect;
@@ -129,8 +130,8 @@
 - (void)setEditable:(BOOL)editable
 {
 	_editable = editable;
-	[_textField setEditable:editable];
-	[_textField setBezeled:editable];
+	_textField.editable = editable;
+	_textField.bezeled = editable;
 	_textField.drawsBackground = editable;
 	_textField.font = (editable)? [NSFont systemFontOfSize:10.] : [NSFont systemFontOfSize:12.];
 }

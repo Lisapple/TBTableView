@@ -68,12 +68,14 @@ const NSString * kIndexPathKey = @"indexPath";
 @end
 
 
-@interface TableView (PrivateMethods)
+@interface TableView ()
+
+@property (strong) PlaceholderLabel * placeholderLabel;
+@property (strong) NSView * placeholderAccessoryView;
 
 - (void)selectSection:(NSInteger)section;
 - (void)deselectSelectedSection;
 
-- (void)removeAllEventsTracking;
 - (CGFloat)heightForSection:(NSInteger)section;
 - (NSIndexPath *)indexPathForCell:(TableViewCell *)cell;
 - (NSRect)rectForSection:(NSInteger)section includeSectionHeader:(BOOL)withSection;
@@ -91,13 +93,13 @@ const CGFloat kSectionHeight = 20.;
 @synthesize rowHeight = _rowHeight;
 @synthesize separatorColor = _separatorColor;
 
-- (id)initWithCoder:(NSCoder *)aDecoder
+- (instancetype)initWithCoder:(NSCoder *)aDecoder
 {
 	if ((self = [super initWithCoder:aDecoder])) {
 		_rowHeight = 17.;
 		self.separatorColor = [NSColor lightGrayColor];
 		
-		self.backgroundColor = [NSColor colorWithCalibratedWhite:(243. / 255.) alpha:1.];// = 0.871 
+		self.backgroundColor = [NSColor colorWithCalibratedWhite:(243. / 255.) alpha:1.]; // = 0.871 
 		
 		isTrackingSections = isTrackingCells = NO;
 		
@@ -279,10 +281,12 @@ const CGFloat kSectionHeight = 20.;
 	sectionsHeight = (CGFloat *)malloc(numberOfSections * sizeof(CGFloat));
 	
 	if (rowsHeight) free(rowsHeight);
-	rowsHeight = (CGFloat *)malloc(totalOfRows * sizeof(CGFloat));
+	if (totalOfRows > 0) {
+		rowsHeight = (CGFloat *)malloc(totalOfRows * sizeof(CGFloat));
+	}
 	
 	/* Remove sections and cells from documentView */
-	NSArray * subviewsCopy = [[(NSView *)self.documentView subviews] copy];
+	NSArray * subviewsCopy = [((NSView *)self.documentView).subviews copy];
 	for (NSView * subview in subviewsCopy) {
 		[subview removeFromSuperview];
 	}
@@ -343,11 +347,11 @@ const CGFloat kSectionHeight = 20.;
 				NSIndexPath * indexPath = [[NSIndexPath alloc] initWithSection:section row:rowIndex];
 				rowHeight = [_dataSource tableView:self rowHeightAtIndex:indexPath];
 			}
-			rowsHeight[row] = rowHeight + 1.;// The height of the row + 1px for the separator
+			rowsHeight[row] = rowHeight + 1.; // The height of the row + 1px for the separator
 			
 			cell.frame = NSMakeRect(0., y, width, rowHeight);
 			cell.autoresizingMask = NSViewWidthSizable;
-			[cell setHidden:(sectionState == TableViewSectionStateClose)];
+			cell.hidden = (sectionState == TableViewSectionStateClose);
 			[self.documentView addSubview:cell];
 			y += (rowHeight + 1.);
 			sectionHeight += (rowHeight + 1.);
@@ -373,29 +377,44 @@ const CGFloat kSectionHeight = 20.;
 		[self.documentView addSubview:sectionView];
 	}
 	
-	
+	/* Show placeholder if needed */
+	NSString * placeholderText = nil;
 	if ([_dataSource respondsToSelector:@selector(placeholderForTableView:)]) {
-		NSString * placeholder = [_dataSource placeholderForTableView:self];
-		
-		if (placeholder.length > 0) {
-			[placeholderLabel removeFromSuperview];
-			
-			NSRect rect = self.contentView.documentRect;
-			rect.origin = NSMakePoint(0., (int)(totalHeight + ((rect.size.height - totalHeight - 30.) / 2.)));
-			rect.size.height = 30.;
-			placeholderLabel = [[PlaceholderLabel alloc] initWithFrame:rect];
-			placeholderLabel.autoresizingMask = NSViewWidthSizable;
-			placeholderLabel.backgroundColor = self.backgroundColor;
-			[self.contentView addSubview:placeholderLabel];
-			
-			placeholderLabel.title = placeholder;
-			
-		} else {
-			[placeholderLabel removeFromSuperview];
-			placeholderLabel = nil;
-		}
+		placeholderText = [_dataSource placeholderForTableView:self];
+	}
+	NSView * placeholderAccessoryView = nil;
+	if ([_dataSource respondsToSelector:@selector(placeholderAccessoryViewForTableView:)]) {
+		placeholderAccessoryView = [_dataSource placeholderAccessoryViewForTableView:self];
 	}
 	
+	CGFloat y = (int)(totalHeight + ((self.contentView.documentRect.size.height - totalHeight - 30.) / 2.));
+	if (placeholderText.length > 0) {
+		NSRect rect = self.contentView.documentRect;
+		rect.origin = NSMakePoint(0., y);
+		rect.size.height = 30.;
+		y += (rect.size.height + 8.);
+		if (!_placeholderLabel) {
+			_placeholderLabel = [[PlaceholderLabel alloc] initWithFrame:rect];
+			_placeholderLabel.autoresizingMask = NSViewWidthSizable;
+			_placeholderLabel.backgroundColor = self.backgroundColor;
+			[self.contentView addSubview:_placeholderLabel];
+		} else {
+			_placeholderLabel.frame = rect;
+		}
+		_placeholderLabel.title = placeholderText;
+	} else {
+		[_placeholderLabel removeFromSuperview];
+		_placeholderLabel = nil;
+	}
+	
+	[_placeholderAccessoryView removeFromSuperview];
+	_placeholderAccessoryView = placeholderAccessoryView;
+	if (_placeholderAccessoryView) {
+		NSRect rect = _placeholderAccessoryView.frame;
+		rect.origin = NSMakePoint((int)((self.contentView.documentRect.size.width - rect.size.width) / 2.), y);
+		_placeholderAccessoryView.frame = rect;
+		[self.contentView addSubview:_placeholderAccessoryView];
+	}
 	
 	NSSize size = ((NSView *)self.documentView).frame.size;
 	[self.documentView setFrameSize:NSMakeSize(size.width, totalHeight)];
@@ -437,7 +456,7 @@ const CGFloat kSectionHeight = 20.;
 		if (respondsToRowHeight) {
 			rowHeight = [_dataSource tableView:self rowHeightAtIndex:indexPath];
 		}
-		rowsHeight[rowIndex] = (rowHeight + 1.);// The height of the row + 1px for the separator
+		rowsHeight[rowIndex] = (rowHeight + 1.); // The height of the row + 1px for the separator
 		sectionHeight += (rowHeight + 1.);
 		y += (rowHeight + 1.);
 		
@@ -451,7 +470,7 @@ const CGFloat kSectionHeight = 20.;
 		cell.frame = frame;
 		
 		cell.autoresizingMask = NSViewWidthSizable;
-		[cell setHidden:(sectionsState[section] == TableViewSectionStateClose)];
+		cell.hidden = (sectionsState[section] == TableViewSectionStateClose);
 		[self.documentView insertView:cell atIndex:0];
 		[sectionRows addObject:cell];
 		
@@ -475,7 +494,7 @@ const CGFloat kSectionHeight = 20.;
 	if ([_dataSource respondsToSelector:@selector(tableView:rowHeightAtIndex:)]) {
 		rowHeight = [_dataSource tableView:self rowHeightAtIndex:indexPath];
 	}
-	rowHeight += 1.;// The height of the row + 1px for the separator
+	rowHeight += 1.; // The height of the row + 1px for the separator
 	
 	NSInteger rowIndex = [self rowIndexForIndexPath:indexPath];
 	rowsHeight[rowIndex] = rowHeight;
@@ -491,7 +510,7 @@ const CGFloat kSectionHeight = 20.;
 	// @TODO: Scrolls to see the row at "indexPath", depending of "position", scrolls to see the row at bottom/top/middle or the shortest way
 	
 	TableViewCell * cell = [self cellAtIndexPath:indexPath];
-	[[self documentView] scrollPoint:NSMakePoint(0., cell.frame.origin.y)];
+	[self.documentView scrollPoint:NSMakePoint(0., cell.frame.origin.y)];
 }
 
 - (void)scrollToSection:(NSInteger)section openSection:(BOOL)open position:(TableViewPosition)position
@@ -503,7 +522,7 @@ const CGFloat kSectionHeight = 20.;
 	
 	CGFloat offsetY = 0.;
 	for (int i = 0; i < section; i++) { offsetY += [self heightForSection:i]; }
-	[[self documentView] scrollPoint:NSMakePoint(0., offsetY)];
+	[self.documentView scrollPoint:NSMakePoint(0., offsetY)];
 }
 
 #pragma mark - Section and Cell Tracking
@@ -562,33 +581,34 @@ const CGFloat kSectionHeight = 20.;
 	if (delegateResponds) {
 		
 		NSInteger totalOfRows = 0;
-		for (int section = 0; section < numberOfSections; section++)
+		for (int section = 0; section < numberOfSections; section++) {
 			totalOfRows += ((NSArray *)sectionsRows[section]).count;
+		}
 		
-		/* Add tracking rect for each cell */
-		cellsEvents = (unsigned int *)malloc(totalOfRows * sizeof(unsigned int));
-		NSInteger section = 0, totalRow = 0;
-		for (NSArray * sectionRows in sectionsRows) {
-			NSInteger rowIndex = 0;// The row index of the current section
-			for (TableViewCell * cell in sectionRows) {
-				/* Ask the delegate before tracking */
-				NSIndexPath * indexPath = [[NSIndexPath alloc] initWithSection:section row:rowIndex];
-				TableViewCellEvent eventMask = [_delegate tableView:self tracksEventsForCell:cell atIndexPath:indexPath];
-				cellsEvents[totalRow] = eventMask;
-				if (eventMask > 0) {
-					NSDictionary * userInfo = @{ kTrackedViewKey : cell, kIndexPathKey : indexPath };
-					NSRect frame = NSMakeRect(0., 0., cell.frame.size.width, cell.frame.size.height);
-					NSTrackingArea * trackingArea = [[NSTrackingArea alloc] initWithRect:frame
-																				 options:(NSTrackingMouseEnteredAndExited | NSTrackingActiveInKeyWindow)
-																				   owner:self
-																				userInfo:userInfo];
-					[cell addTrackingArea:trackingArea];
+		if (totalOfRows > 0) {
+			/* Add tracking rect for each cell */
+			cellsEvents = (unsigned int *)malloc(totalOfRows * sizeof(unsigned int));
+			NSInteger section = 0, totalRow = 0;
+			for (NSArray * sectionRows in sectionsRows) {
+				NSInteger rowIndex = 0; // The row index of the current section
+				for (TableViewCell * cell in sectionRows) {
+					/* Ask the delegate before tracking */
+					NSIndexPath * indexPath = [[NSIndexPath alloc] initWithSection:section row:rowIndex];
+					TableViewCellEvent eventMask = [_delegate tableView:self tracksEventsForCell:cell atIndexPath:indexPath];
+					cellsEvents[totalRow] = eventMask;
+					if (eventMask > 0) {
+						NSDictionary * userInfo = @{ kTrackedViewKey : cell, kIndexPathKey : indexPath };
+						[cell addTrackingArea:[[NSTrackingArea alloc] initWithRect:cell.bounds
+																		   options:(NSTrackingMouseEnteredAndExited | NSTrackingActiveInKeyWindow)
+																			 owner:self
+																		  userInfo:userInfo]];
+					}
+					
+					rowIndex++;
 				}
-				
-				rowIndex++;
+				section++;
+				totalRow++;
 			}
-			section++;
-			totalRow++;
 		}
 	}
 	
@@ -627,14 +647,14 @@ const CGFloat kSectionHeight = 20.;
 - (void)scrollPoint:(NSPoint)aPoint
 {
 	[super scrollPoint:aPoint];
-	[self.documentView scrollPoint:aPoint];// Scroll on the document view, scrolling on view haven't any effect
+	[self.documentView scrollPoint:aPoint]; // Scroll on the document view, scrolling on view haven't any effect
 }
 
 - (void)reflectScrolledClipView:(NSClipView *)aClipView
 {
 	[super reflectScrolledClipView:aClipView];
 	
-	NSPoint offset = [[self contentView] bounds].origin;
+	NSPoint offset = self.contentView.bounds.origin;
 	/* Find the section to show at the top */
 	int topSection = 0;
 	float sectionsTotalHeight = 0.;
@@ -739,11 +759,18 @@ const CGFloat kSectionHeight = 20.;
 		_totalHeight += sectionHeight;
 	}
 	
-	if (placeholderLabel) {
+	CGFloat y = (int)(_totalHeight + ((self.contentView.documentRect.size.height - _totalHeight - 30.) / 2.));
+	if (_placeholderLabel) {
 		NSRect rect = self.contentView.documentRect;
-		rect.origin = NSMakePoint(0., (int)(_totalHeight + ((rect.size.height - _totalHeight - 30.) / 2.)));
+		rect.origin = NSMakePoint(0., y);
 		rect.size.height = 30.;
-		placeholderLabel.frame = rect;
+		y += (rect.size.height + 8.);
+		_placeholderLabel.frame = rect;
+	}
+	if (_placeholderAccessoryView) {
+		NSRect rect = _placeholderAccessoryView.frame;
+		rect.origin = NSMakePoint((int)((self.contentView.documentRect.size.width - rect.size.width) / 2.), y);
+		_placeholderAccessoryView.frame = rect;
 	}
 	
 	NSSize size = ((NSView *)self.documentView).frame.size;
@@ -778,11 +805,17 @@ const CGFloat kSectionHeight = 20.;
 		_totalHeight += sectionHeight;
 	}
 	
-	if (placeholderLabel) {
+	CGFloat y = (int)(_totalHeight + ((self.contentView.documentRect.size.height - _totalHeight - 30.) / 2.));
+	if (_placeholderLabel) {
 		NSRect rect = self.contentView.documentRect;
-		rect.origin = NSMakePoint(0., (int)(_totalHeight + ((rect.size.height - _totalHeight - 30.) / 2.)));
+		rect.origin = NSMakePoint(0., y);
 		rect.size.height = 30.;
-		placeholderLabel.frame = rect;
+		_placeholderLabel.frame = rect;
+	}
+	if (_placeholderAccessoryView) {
+		NSRect rect = _placeholderAccessoryView.frame;
+		rect.origin = NSMakePoint((int)((self.contentView.documentRect.size.width - rect.size.width) / 2.), y);
+		_placeholderAccessoryView.frame = rect;
 	}
 	
 	NSSize size = ((NSView *)self.documentView).frame.size;
@@ -870,7 +903,7 @@ const CGFloat kSectionHeight = 20.;
 	} else {
 		
 		/* Check if we are in a section header */
-		NSInteger section = -1, index = 0;// "section" is the index of the sectionView, "-1" if the drag is not into a sectionView
+		NSInteger section = -1, index = 0; // "section" is the index of the sectionView, "-1" if the drag is not into a sectionView
 		for (TableViewSection * sectionView in sectionsView) {
 			if (NSPointInRect(point, sectionView.frame)) {
 				section = index;
@@ -917,8 +950,8 @@ const CGFloat kSectionHeight = 20.;
 
 - (NSPoint)convertLocationFromWindow:(NSPoint)locationInWindow
 {
-	NSPoint location = [self convertPointToBase:locationInWindow];
-	NSPoint offset = [[self contentView] bounds].origin;
+	NSPoint location = [self convertPoint:locationInWindow fromView:self.window.contentView];
+	NSPoint offset = self.contentView.bounds.origin; // @FIXME: Of course, |offset| is always CGZeroPoint, what was the initial though?
 	location.x += offset.x;
 	location.y += offset.y;
 	return location;
@@ -930,7 +963,7 @@ const CGFloat kSectionHeight = 20.;
 	NSView * view = userInfo[kTrackedViewKey];
 	if ([view isKindOfClass:[TableViewSection class]]) {
 		if (sectionsEvents) {
-			NSInteger section = [(NSNumber *)userInfo[kSectionKey] integerValue];
+			NSInteger section = ((NSNumber *)userInfo[kSectionKey]).integerValue;
 			if (sectionsEvents[section] & TableViewCellEventMouseEntered) {
 				if ([_delegate respondsToSelector:@selector(tableView:didReceiveEvent:forSection:)])
 					[_delegate tableView:self didReceiveEvent:TableViewCellEventMouseEntered forSection:section];
@@ -954,7 +987,7 @@ const CGFloat kSectionHeight = 20.;
 	NSView * view = userInfo[kTrackedViewKey];
 	if ([view isKindOfClass:[TableViewSection class]]) {
 		if (sectionsEvents) {
-			NSInteger section = [(NSNumber *)userInfo[kSectionKey] integerValue];
+			NSInteger section = ((NSNumber *)userInfo[kSectionKey]).integerValue;
 			if (sectionsEvents[section] & TableViewCellEventMouseExited) {
 				if ([_delegate respondsToSelector:@selector(tableView:didReceiveEvent:forSection:)])
 					[_delegate tableView:self didReceiveEvent:TableViewCellEventMouseExited forSection:section];
@@ -1003,7 +1036,7 @@ const CGFloat kSectionHeight = 20.;
 	}
 }
 
-- (void)doubleClicOnCellAtIndexPath:(NSIndexPath *)indexPath
+- (void)doubleClickOnCellAtIndexPath:(NSIndexPath *)indexPath
 {
 	TableViewCell * cell = [self cellAtIndexPath:indexPath];
 	if ([_delegate respondsToSelector:@selector(tableView:didDoubleClickOnCell:atIndexPath:)]) {
@@ -1013,14 +1046,14 @@ const CGFloat kSectionHeight = 20.;
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
-	NSPoint location = [self convertLocationFromWindow:[theEvent locationInWindow]];
+	NSPoint location = [self convertLocationFromWindow:theEvent.locationInWindow];
 	NSIndexPath * indexPath = [self indexPathForCellAtPoint:location];
 	
 	/* Select the cell even if the user double-click on row */
 	if (theEvent.clickCount == 1) {
 		[self selectCellAtIndexPath:indexPath];
 	} else if (theEvent.clickCount > 1) {
-		[self doubleClicOnCellAtIndexPath:indexPath];
+		[self doubleClickOnCellAtIndexPath:indexPath];
 	}
 }
 
@@ -1036,7 +1069,7 @@ const CGFloat kSectionHeight = 20.;
 - (NSMenu *)menuForEvent:(NSEvent *)theEvent
 {
 	NSMenu * menu = nil;
-	NSPoint location = [self convertLocationFromWindow:[theEvent locationInWindow]];
+	NSPoint location = [self convertLocationFromWindow:theEvent.locationInWindow];
 	NSIndexPath * indexPath = [self indexPathForCellAtPoint:location];
 	if (indexPath) {// It's a cell
 		if ([_delegate respondsToSelector:@selector(rightClickMenuForTableView:forCellAtIndexPath:)]) {
@@ -1056,7 +1089,7 @@ const CGFloat kSectionHeight = 20.;
 				[self deselectSelectedSection];
 				
 				if (menu) {// If the delegate returns a menu, select the section
-					menu.delegate = self;// Set the delegate to be notify by "menuDidClose"
+					menu.delegate = self; // Set the delegate to be notify by "menuDidClose"
 					selectedSection = section;
 					[self selectSection:section];
 				}
@@ -1079,11 +1112,11 @@ const CGFloat kSectionHeight = 20.;
 	
 	if (0 <= (point.y - frame.origin.y) && (point.y - frame.origin.y) <= kAutoscrollOffset) {
 		offset.y += 2.;
-		[[self documentView] scrollPoint:offset];//[[self documentView] scrollPoint:NSMakePoint(0., frame.origin.y + point.y + kAutoscrollOffset)];
+		[self.documentView scrollPoint:offset];
 	} else if (0 <= ((frame.origin.y + frame.size.height) - point.y) &&
 			   ((frame.origin.y + frame.size.height) - point.y) <= kAutoscrollOffset) {
 		offset.y -= 2.;
-		[[self documentView] scrollPoint:offset];//[[self documentView] scrollPoint:NSMakePoint(0., point.y + (frame.origin.y + frame.size.height))];
+		[self.documentView scrollPoint:offset];
 	}
 	
 	if (!draggingView) {
@@ -1095,7 +1128,7 @@ const CGFloat kSectionHeight = 20.;
 	NSPoint location = [self convertLocationFromWindow:[sender draggingLocation]];
 	
 	/* Check if we are in a section header */
-	NSInteger section = -1, index = 0;// "section" is the index of the sectionView, "-1" if the drag is not into a sectionView
+	NSInteger section = -1, index = 0; // "section" is the index of the sectionView, "-1" if the drag is not into a sectionView
 	for (TableViewSection * sectionView in sectionsView) {
 		if (NSPointInRect(location, sectionView.frame)) {
 			section = index;
@@ -1159,7 +1192,7 @@ const CGFloat kSectionHeight = 20.;
 		draggingView.frame = rect;
 	}
 	
-	NSArray * items = [[sender draggingPasteboard] pasteboardItems];
+	NSArray * items = [sender draggingPasteboard].pasteboardItems;
 	NSDragOperation op = [sender draggingSourceOperationMask];
 	return [self.delegate tableView:self dragOperationForItems:items proposedOperation:op atIndexPath:indexPath];
 }
@@ -1172,7 +1205,7 @@ const CGFloat kSectionHeight = 20.;
 	NSPoint location = [self convertLocationFromWindow:[sender draggingLocation]];
 	NSIndexPath * indexPath = [self indexPathForDragAtPoint:location];
 	
-	NSArray * items = [[sender draggingPasteboard] pasteboardItems];
+	NSArray * items = [sender draggingPasteboard].pasteboardItems;
 	return [self.delegate tableView:self shouldDragItems:items atIndexPath:indexPath];
 }
 
@@ -1193,7 +1226,7 @@ const CGFloat kSectionHeight = 20.;
 												  row:rowCount];
 	}
 	
-	NSArray * pasteboardItems = [[sender draggingPasteboard] pasteboardItems];
+	NSArray * pasteboardItems = [sender draggingPasteboard].pasteboardItems;
 	[self.delegate tableView:self didDragItems:pasteboardItems withDraggingInfo:sender atIndexPath:indexPath];
 	
 	return YES;
@@ -1218,7 +1251,7 @@ const CGFloat kSectionHeight = 20.;
 	NSArray * sectionCells = (NSArray *)sectionsRows[section];
 	for (TableViewCell * cell in sectionCells) {
 		/* If section closed (state == NSOffState), hide all rows from the section, else show cells (don't hide) */
-		[cell setHidden:(state == NSOffState)];
+		cell.hidden = (state == NSOffState);
 	}
 	[self updateContentLayout];
 	
@@ -1247,7 +1280,7 @@ const CGFloat kSectionHeight = 20.;
 		if (offset != 0) {
 			NSInteger rows = numberOfRows[selectedIndexPath.section];
 			NSInteger newSection = selectedIndexPath.section;
-			NSInteger newRow = selectedIndexPath.row + offset;// @TODO: jump unselectable rows
+			NSInteger newRow = selectedIndexPath.row + offset; // @TODO: jump unselectable rows
 			
 			if (newRow < 0) { newSection--; newRow = (numberOfRows[newSection] - 1); }
 			else if (newRow >= rows) { newSection++; newRow = 0; }

@@ -14,6 +14,6 @@
 
 + (NSIndexPath *)indexPathWithSection:(NSUInteger)section row:(NSUInteger)row;
 
-- (id)initWithSection:(NSUInteger)section row:(NSUInteger)row;
+- (instancetype)initWithSection:(NSUInteger)section row:(NSUInteger)row;
 
 @end

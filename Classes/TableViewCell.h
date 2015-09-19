@@ -69,7 +69,7 @@ typedef enum _TableViewCellSelectedColorStyle TableViewCellSelectedColorStyle;
 @property (nonatomic, assign) TableViewCellBackgroundColorStyle colorStyle;
 @property (nonatomic, assign) TableViewCellSelectedColorStyle selectedColorStyle;
 
-- (id)initWithStyle:(TableViewCellStyle)cellStyle reusableIdentifier:(NSString *)cellID;
+- (instancetype)initWithStyle:(TableViewCellStyle)cellStyle reusableIdentifier:(NSString *)cellID NS_DESIGNATED_INITIALIZER;
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated;
 

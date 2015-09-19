@@ -16,14 +16,12 @@
 - (void)setTitle:(NSString *)title
 {
 	_title = [title copy];
-	
 	[self setNeedsDisplay:YES];
 }
 
 - (void)setBackgroundColor:(NSColor *)backgroundColor
 {
 	_backgroundColor = [backgroundColor copy];
-	
 	[self setNeedsDisplay:YES];
 }
 
@@ -73,25 +71,22 @@
 	if (gradient) CGGradientRelease(gradient);
 	
 	/* Draw the text into a mask image */
-	CGContextRef textContextRef = CGBitmapContextCreate(NULL,
-														(size_t)width,
-														(size_t)height,
-														8,
-														0,
-														colorSpace,
-														kCGImageAlphaPremultipliedLast);
+	CGContextRef textContextRef = CGBitmapContextCreate(NULL, (size_t)width, (size_t)height,
+														8, 0,
+														colorSpace, kCGImageAlphaPremultipliedLast);
 	
-	const CGFloat text_components[4] = {1., 1., 1., 1.};
+	const CGFloat text_components[4] = { 1., 1., 1., 1. };
 	CGColorRef color = CGColorCreate(colorSpace, text_components);
 	CGContextSetFillColorWithColor(textContextRef, color);
 	CGColorRelease(color);
 	
 	CGColorSpaceRelease(colorSpace);
 	
-	CGFloat fontHeight = 24.;
-	CGContextSelectFont(textContextRef, "Helvetica-Bold", fontHeight, kCGEncodingMacRoman);
+	CGFloat fontHeight = 20.;
+	NSString * systemFontName = [NSFont systemFontOfSize:10.].fontName;
+	CGContextSelectFont(textContextRef, systemFontName.UTF8String, fontHeight, kCGEncodingMacRoman);
 	
-	const char * string = [_title UTF8String];
+	const char * string = _title.UTF8String;
 	unsigned long length = strlen(string);
 	
 	CGPoint oldPosition = CGContextGetTextPosition(textContextRef);
@@ -113,14 +108,11 @@
 	
 	
 	CGDataProviderRef provider = CGImageGetDataProvider(textImageRef);
-	CGImageRef maskTextImageRef = CGImageMaskCreate((size_t)width,
-													(size_t)height,
+	CGImageRef maskTextImageRef = CGImageMaskCreate((size_t)width, (size_t)height,
 													CGImageGetBitsPerComponent(textImageRef),
 													CGImageGetBitsPerPixel(textImageRef),
 													CGImageGetBytesPerRow(textImageRef),
-													provider,
-													NULL,
-													false);
+													provider, NULL, false);
 	if (textImageRef) CGImageRelease(textImageRef);
 	
 	CGColorRef shadowColor = CGColorCreateGenericRGB(0., 0., 0., 0.5);

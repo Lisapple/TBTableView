@@ -25,13 +25,13 @@
 @synthesize editable = _editable;
 @synthesize selected = _selected;
 
-- (id)initWithFrame:(NSRect)frame
+- (instancetype)initWithFrame:(NSRect)frame
 {
     if ((self = [super initWithFrame:frame])) {
 		/* Add the closureButton but hide it and don't change the position of "textField" */
 		NSRect frame = NSMakeRect(10., (int)(self.frame.size.height - 13.) / 2., 13., 13.);
 		_closureButton = [[NSButton alloc] initWithFrame:frame];
-		_closureButton.title = nil;
+		_closureButton.title = @"";
 		[_closureButton setButtonType:NSOnOffButton];
 		_closureButton.bezelStyle = NSDisclosureBezelStyle;
 		_closureButton.state = NSOnState;
@@ -45,7 +45,7 @@
         frame = NSMakeRect(margin, (int)((self.frame.size.height - height) / 2.) + 1,
 						   self.frame.size.width - (2. * margin), height);
 		_textField = [[TableViewSectionTextField alloc] initWithFrame:frame];
-		[_textField.cell setControlSize:NSMiniControlSize];
+		_textField.cell.controlSize = NSMiniControlSize;
 		_textField.textColor = [NSColor darkGrayColor];
 		_textField.bezelStyle = NSTextFieldSquareBezel;
 		[_textField setBezeled:NO];
@@ -72,7 +72,7 @@
 
 - (void)setShowsClosureButton:(BOOL)show
 {
-	[_closureButton setHidden:!show];
+	_closureButton.hidden = !show;
 	NSRect frame = _textField.frame;
 	frame.origin.x = (show)? (10. + 13. + 4.): 10.;
 	_textField.frame = frame;
@@ -108,8 +108,8 @@
 - (void)setEditable:(BOOL)editable
 {
 	_editable = editable;
-	[_textField setEditable:editable];
-	[_textField setBezeled:editable];
+	_textField.editable = editable;
+	_textField.bezeled = editable;
 	_textField.drawsBackground = editable;
 	_textField.font = (editable)? [NSFont systemFontOfSize:10.] : [NSFont systemFontOfSize:12.];
 }
@@ -129,7 +129,7 @@
 void RectRoundedFill(CGRect rect, float radius);
 void RectRoundedFill(CGRect rect, float radius)
 {
-	CGContextRef context = [[NSGraphicsContext currentContext] graphicsPort];
+	CGContextRef context = [NSGraphicsContext currentContext].graphicsPort;
 	
 	radius = MIN(radius, rect.size.height / 2.);
 	float x = rect.origin.x, y = rect.origin.y, width = rect.size.width, height = rect.size. height;
