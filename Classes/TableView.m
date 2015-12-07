@@ -37,6 +37,7 @@ const NSString * kIndexPathKey = @"indexPath";
 
 @end
 
+
 @implementation _TableViewSelectionView
 
 #define kStrokeWidth 3.
@@ -69,6 +70,28 @@ const NSString * kIndexPathKey = @"indexPath";
 
 
 @interface TableView ()
+{
+	NSInteger numberOfSections, oldNumberOfSections;
+	NSInteger * numberOfRows;// An array with the number rows into each section (the count of the array is equal to "numberOfSections")
+	NSInteger totalHeight;// The total height of all rows
+	CGFloat * sectionsHeight;// The size of the section (with all rows and the section header), include the height of the separator
+	CGFloat * rowsHeight;// Height of all rows
+	BOOL * showsClosureButtons;
+	TableViewSectionState * sectionsState;
+	
+	NSInteger selectedSection;
+	NSIndexPath * selectedIndexPath;
+	
+	_TableViewSelectionView * draggingView;
+	
+	unsigned int * sectionsEvents;
+	unsigned int * cellsEvents;
+	
+	BOOL isTrackingSections, isTrackingCells;
+}
+
+@property (strong) NSMutableArray <NSArray <TableViewCell *> *> * sectionsRows;// All the rows into an array for each section (-> array of array)
+@property (strong) NSArray <TableViewSection *> * sectionsView;// All section views
 
 @property (strong) PlaceholderLabel * placeholderLabel;
 @property (strong) NSView * placeholderAccessoryView;
@@ -134,7 +157,7 @@ const CGFloat kSectionHeight = 20.;
 
 - (void)enableEditing:(BOOL)editing forSection:(NSInteger)section
 {
-	TableViewSection * sectionView = sectionsView[section];
+	TableViewSection * sectionView = _sectionsView[section];
 	sectionView.editable = editing;
 	[self.window makeFirstResponder:(editing)? sectionView.textField: nil];
 }
@@ -192,24 +215,24 @@ const CGFloat kSectionHeight = 20.;
 - (void)selectSection:(NSInteger)section
 {
 	[self deselectSelectedSection];
-	if (0 <= section && section < sectionsView.count) {
-		((TableViewSection *)sectionsView[section]).selected = YES;
+	if (0 <= section && section < _sectionsView.count) {
+		_sectionsView[section].selected = YES;
 		selectedSection = section;
 	}
 }
 
 - (void)deselectSelectedSection
 {
-	if (0 <= selectedSection && selectedSection < sectionsView.count) {
-		((TableViewSection *)sectionsView[selectedSection]).selected = NO;
+	if (0 <= selectedSection && selectedSection < _sectionsView.count) {
+		_sectionsView[selectedSection].selected = NO;
 	}
 	selectedSection = -1;
 }
 
 - (void)deselectSection:(NSInteger)section
 {
-	if (0 <= section && section < sectionsView.count) {
-		((TableViewSection *)sectionsView[section]).selected = NO;
+	if (0 <= section && section < _sectionsView.count) {
+		_sectionsView[section].selected = NO;
 	}
 	selectedSection = -1;
 }
@@ -226,7 +249,7 @@ const CGFloat kSectionHeight = 20.;
 {
 	sectionsState[section] = sectionState;
 	if (sectionState == TableViewSectionStateOpen || sectionState == TableViewSectionStateClose) {
-		TableViewSection * sectionView = sectionsView[section];
+		TableViewSection * sectionView = _sectionsView[section];
 		if (sectionView.showsClosureButton) {
 			sectionView.closureButton.state = (sectionState == TableViewSectionStateOpen)? NSOnState : NSOffState;
 		}
@@ -239,7 +262,7 @@ const CGFloat kSectionHeight = 20.;
 {
 	NSArray * sectionsTitle = [_dataSource titlesForSectionsInTableView:self];
 	for (int section = 0; section < numberOfSections; section++) {
-		TableViewSection * sectionView = sectionsView[section];
+		TableViewSection * sectionView = _sectionsView[section];
 		sectionView.title = sectionsTitle[section];
 	}
 }
@@ -252,13 +275,14 @@ const CGFloat kSectionHeight = 20.;
 	
 	numberOfSections = [_dataSource numberOfSectionsInTableView:self];
 	
-	if (numberOfRows) free(numberOfRows);
-	numberOfRows = (NSInteger *)malloc(numberOfSections * sizeof(NSInteger));
+	if (numberOfRows) {
+		free(numberOfRows); numberOfRows = NULL; }
+	numberOfRows = (NSInteger *)malloc(MAX(1, numberOfSections) * sizeof(NSInteger));
 	
 	NSArray * sectionsTitle = [_dataSource titlesForSectionsInTableView:self];
 	
 	NSInteger totalOfRows = 0;
-	sectionsRows = [[NSMutableArray alloc] initWithCapacity:numberOfSections];
+	_sectionsRows = [[NSMutableArray alloc] initWithCapacity:numberOfSections];
 	for (int section = 0; section < numberOfSections; section++) {
 		NSInteger rowCount = [_dataSource tableView:self numberOfRowsInSection:section];
 		NSMutableArray * sectionRows = [[NSMutableArray alloc] initWithCapacity:numberOfSections];
@@ -269,7 +293,7 @@ const CGFloat kSectionHeight = 20.;
 			[sectionRows addObject:cell];
 		}
 		
-		[sectionsRows addObject:(NSArray *)sectionRows];
+		[_sectionsRows addObject:(NSArray *)sectionRows];
 		
 		totalOfRows += rowCount;
 		numberOfRows[section] = rowCount;
@@ -277,10 +301,12 @@ const CGFloat kSectionHeight = 20.;
 	
 	CGFloat width = self.contentView.documentRect.size.width;
 	
-	if (sectionsHeight) free(sectionsHeight);
-	sectionsHeight = (CGFloat *)malloc(numberOfSections * sizeof(CGFloat));
+	if (sectionsHeight) {
+		free(sectionsHeight); sectionsHeight = NULL; }
+	sectionsHeight = (CGFloat *)malloc(MAX(1, numberOfSections) * sizeof(CGFloat));
 	
-	if (rowsHeight) free(rowsHeight);
+	if (rowsHeight) {
+		free(rowsHeight); rowsHeight = NULL; }
 	if (totalOfRows > 0) {
 		rowsHeight = (CGFloat *)malloc(totalOfRows * sizeof(CGFloat));
 	}
@@ -293,25 +319,26 @@ const CGFloat kSectionHeight = 20.;
 	
 	BOOL respondsToRowHeight = ([_dataSource respondsToSelector:@selector(tableView:rowHeightAtIndex:)]);
 	
-	if (showsClosureButtons) free(showsClosureButtons);
-	showsClosureButtons = (BOOL *)malloc(numberOfSections * sizeof(BOOL));
+	if (showsClosureButtons) {
+		free(showsClosureButtons); showsClosureButtons = NULL; }
+	showsClosureButtons = (BOOL *)malloc(MAX(1, numberOfSections) * sizeof(BOOL));
 	
 	if (numberOfSections != oldNumberOfSections) {
-		TableViewSectionState * sectionsStateCopy = (TableViewSectionState *)calloc(numberOfSections, sizeof(TableViewSectionState));
+		TableViewSectionState * sectionsStateCopy = (TableViewSectionState *)calloc(MAX(1, numberOfSections), sizeof(TableViewSectionState));
 		if (sectionsState) {
 			for (int i = 0; i < MIN(numberOfSections, oldNumberOfSections); i++)
 				sectionsStateCopy[i] = sectionsState[i];
-			free(sectionsState);
+			free(sectionsState); sectionsState = NULL;
 		}
 		sectionsState = sectionsStateCopy;
 	}
 	
 	// @TODO: merge this code block with the upper one
-	NSMutableArray * _sectionsView = [[NSMutableArray alloc] initWithCapacity:numberOfSections];
+	NSMutableArray * sectionsView = [[NSMutableArray alloc] initWithCapacity:numberOfSections];
 	NSInteger section = 0, row = 0;
 	CGFloat offsetY = 0., sectionHeight = 0.;
 	totalHeight = 0.;
-	for (NSArray * sectionRows in sectionsRows) {
+	for (NSArray * sectionRows in _sectionsRows) {
 		CGRect frame = CGRectMake(0., offsetY, width, kSectionHeight);
 		TableViewSection * sectionView = [[TableViewSection alloc] initWithFrame:frame];
 		sectionView.autoresizingMask = NSViewWidthSizable;
@@ -333,7 +360,7 @@ const CGFloat kSectionHeight = 20.;
 			showsClosureButtons[section] = showsClosureButton;
 		}
 		
-		[_sectionsView addObject:sectionView];
+		[sectionsView addObject:sectionView];
 		
 		offsetY += kSectionHeight;
 		sectionHeight = kSectionHeight;
@@ -370,10 +397,10 @@ const CGFloat kSectionHeight = 20.;
 		
 		section++;
 	}
-	sectionsView = (NSArray *)_sectionsView;
+	_sectionsView = (NSArray *)sectionsView;
 	
 	/* Add section headers at last to set sections upper cells */
-	for (TableViewSection * sectionView in sectionsView) {
+	for (TableViewSection * sectionView in _sectionsView) {
 		[self.documentView addSubview:sectionView];
 	}
 	
@@ -428,10 +455,10 @@ const CGFloat kSectionHeight = 20.;
 
 - (void)reloadDataForSection:(NSInteger)section
 {
-	if (section < 0 || section >= sectionsRows.count)
+	if (section < 0 || section >= _sectionsRows.count)
 		return ;
 	
-	NSArray * cellsCopy = [sectionsRows[section] mutableCopy];
+	NSArray * cellsCopy = [_sectionsRows[section] mutableCopy];
 	for (TableViewCell * cell in cellsCopy) {
 		[cell removeFromSuperview];
 	}
@@ -482,7 +509,7 @@ const CGFloat kSectionHeight = 20.;
 	
 	sectionsHeight[section] = kSectionHeight + sectionHeight;
 	
-	sectionsRows[section] = sectionRows;
+	_sectionsRows[section] = sectionRows;
 	
 	[self updateContentLayout];
 }
@@ -534,11 +561,11 @@ const CGFloat kSectionHeight = 20.;
 	
 	BOOL delegateResponds = ([_delegate respondsToSelector:@selector(tableView:tracksEventsForSection:)]);
 	if (delegateResponds) {
-		sectionsEvents = (unsigned int *)malloc(numberOfSections * sizeof(unsigned int));
+		sectionsEvents = (unsigned int *)malloc(MAX(1, numberOfSections) * sizeof(unsigned int));
 		
 		/* Add tracking rect for each section */
 		for (int section = 0; section < numberOfSections; section++) {
-			TableViewSection * sectionView = sectionsView[section];
+			TableViewSection * sectionView = _sectionsView[section];
 			/* Ask the delegate before tracking */
 			TableViewCellEvent eventMask = [_delegate tableView:self tracksEventsForSection:section];
 			sectionsEvents[section] = eventMask;
@@ -560,14 +587,14 @@ const CGFloat kSectionHeight = 20.;
 - (void)stopTrackingSections
 {
 	for (int section = 0; section < numberOfSections; section++) {
-		TableViewSection * sectionView = sectionsView[section];
+		TableViewSection * sectionView = _sectionsView[section];
 		NSArray * trackingAreasCopy = [sectionView.trackingAreas copy];
 		for (NSTrackingArea * trackingArea in trackingAreasCopy)
 			[sectionView removeTrackingArea:trackingArea];
 	}
 	
-	if (sectionsEvents) free(sectionsEvents);
-	sectionsEvents = NULL;
+	if (sectionsEvents) {
+		free(sectionsEvents); sectionsEvents = NULL; }
 	
 	isTrackingSections = NO;
 }
@@ -582,14 +609,14 @@ const CGFloat kSectionHeight = 20.;
 		
 		NSInteger totalOfRows = 0;
 		for (int section = 0; section < numberOfSections; section++) {
-			totalOfRows += ((NSArray *)sectionsRows[section]).count;
+			totalOfRows += _sectionsRows[section].count;
 		}
 		
 		if (totalOfRows > 0) {
 			/* Add tracking rect for each cell */
 			cellsEvents = (unsigned int *)malloc(totalOfRows * sizeof(unsigned int));
 			NSInteger section = 0, totalRow = 0;
-			for (NSArray * sectionRows in sectionsRows) {
+			for (NSArray * sectionRows in _sectionsRows) {
 				NSInteger rowIndex = 0; // The row index of the current section
 				for (TableViewCell * cell in sectionRows) {
 					/* Ask the delegate before tracking */
@@ -617,7 +644,7 @@ const CGFloat kSectionHeight = 20.;
 
 - (void)stopTrackingCells
 {
-	for (NSArray * sectionRows in sectionsRows) {
+	for (NSArray * sectionRows in _sectionsRows) {
 		for (TableViewCell * cell in sectionRows) {
 			NSArray * trackingAreasCopy = [cell.trackingAreas copy];
 			for (NSTrackingArea * trackingArea in trackingAreasCopy)
@@ -625,8 +652,8 @@ const CGFloat kSectionHeight = 20.;
 		}
 	}
 	
-	if (cellsEvents) free(cellsEvents);
-	cellsEvents = NULL;
+	if (cellsEvents) {
+		free(cellsEvents); cellsEvents = NULL; }
 	
 	isTrackingCells = NO;
 }
@@ -668,7 +695,7 @@ const CGFloat kSectionHeight = 20.;
 	/* Fix all section to the original position (hard way) */
 	float y = 0.;
 	for (int section = 0; section < numberOfSections; section++) {
-		TableViewSection * sectionView = sectionsView[section];
+		TableViewSection * sectionView = _sectionsView[section];
 		NSRect frame = sectionView.frame;
 		frame.origin.y = y;
 		sectionView.frame = frame;
@@ -682,8 +709,8 @@ const CGFloat kSectionHeight = 20.;
 	 */
 	
 	/* Fix the position to the top section */
-	if (topSection < sectionsView.count) {
-		TableViewSection * sectionView = sectionsView[topSection];
+	if (topSection < _sectionsView.count) {
+		TableViewSection * sectionView = _sectionsView[topSection];
 		NSRect frame = sectionView.frame;
 		
 		CGFloat aboveTopSectionOffset = ((sectionsTotalHeight - offset.y) <= kSectionHeight)? (kSectionHeight - (sectionsTotalHeight - offset.y)) : 0.;
@@ -722,7 +749,7 @@ const CGFloat kSectionHeight = 20.;
 	for (int section = 0; section < numberOfSections; section++) {
 		row = 0;
 		
-		NSArray * sectionCells = (NSArray *)sectionsRows[section];
+		NSArray * sectionCells = _sectionsRows[section];
 		
 		CGFloat sectionHeight = kSectionHeight;
 		
@@ -784,7 +811,7 @@ const CGFloat kSectionHeight = 20.;
 	CGFloat _totalHeight = 0.;
 	for (int section = 0; section < numberOfSections; section++) {
 		
-		NSArray * sectionCells = (NSArray *)sectionsRows[section];
+		NSArray * sectionCells = _sectionsRows[section];
 		CGFloat sectionHeight = [self heightForSection:section];
 		
 		if (sectionHeight > kSectionHeight) {// If section is open
@@ -810,6 +837,7 @@ const CGFloat kSectionHeight = 20.;
 		NSRect rect = self.contentView.documentRect;
 		rect.origin = NSMakePoint(0., y);
 		rect.size.height = 30.;
+		y += (rect.size.height + 8.);
 		_placeholderLabel.frame = rect;
 	}
 	if (_placeholderAccessoryView) {
@@ -845,9 +873,9 @@ const CGFloat kSectionHeight = 20.;
 		return nil;
 	
 	NSUInteger section = indexPath.section;
-	if (section < sectionsRows.count) {// Check "sectionsRows" bounds
+	if (section < _sectionsRows.count) {// Check "sectionsRows" bounds
 		NSUInteger row = indexPath.row;
-		NSArray * sectionRows = sectionsRows[section];
+		NSArray * sectionRows = _sectionsRows[section];
 		if (row < sectionRows.count) {// Check "sectionRows" bounds
 			return sectionRows[row];
 		}
@@ -858,7 +886,7 @@ const CGFloat kSectionHeight = 20.;
 - (NSIndexPath *)indexPathForCell:(TableViewCell *)cell
 {
 	for (int section = 0; section < numberOfSections; section++) {
-		NSInteger row = [(NSArray *)sectionsRows[section] indexOfObject:cell];
+		NSInteger row = [_sectionsRows[section] indexOfObject:cell];
 		if (row != NSNotFound)
 			return [NSIndexPath indexPathWithSection:section row:row];
 	}
@@ -904,7 +932,7 @@ const CGFloat kSectionHeight = 20.;
 		
 		/* Check if we are in a section header */
 		NSInteger section = -1, index = 0; // "section" is the index of the sectionView, "-1" if the drag is not into a sectionView
-		for (TableViewSection * sectionView in sectionsView) {
+		for (TableViewSection * sectionView in _sectionsView) {
 			if (NSPointInRect(point, sectionView.frame)) {
 				section = index;
 			}
@@ -1061,7 +1089,7 @@ const CGFloat kSectionHeight = 20.;
 {
 	/* Don't use "-[TableView deselectSection:]" because "selectedSection" could be read by the delegate to know the select section */
 	if (selectedSection != -1)
-		((TableViewSection *)sectionsView[selectedSection]).selected = NO;
+		_sectionsView[selectedSection].selected = NO;
 	
 	menu.delegate = nil;
 }
@@ -1129,7 +1157,7 @@ const CGFloat kSectionHeight = 20.;
 	
 	/* Check if we are in a section header */
 	NSInteger section = -1, index = 0; // "section" is the index of the sectionView, "-1" if the drag is not into a sectionView
-	for (TableViewSection * sectionView in sectionsView) {
+	for (TableViewSection * sectionView in _sectionsView) {
 		if (NSPointInRect(location, sectionView.frame)) {
 			section = index;
 		}
@@ -1148,7 +1176,7 @@ const CGFloat kSectionHeight = 20.;
 		NSInteger rowCount = numberOfRows[section];
 		BOOL sectionClosed = (sectionsState[section] == TableViewSectionStateClose);
 		if (rowCount == 0 || sectionClosed) {// If the row is empty OR closed, show a line under the section header
-			TableViewSection * sectionView = sectionsView[section];
+			TableViewSection * sectionView = _sectionsView[section];
 			CGFloat y = sectionView.frame.origin.y + sectionView.frame.size.height;
 			NSRect rect = NSMakeRect(0., y - 2., self.bounds.size.width, 3.);
 			draggingView.frame = rect;
@@ -1221,7 +1249,7 @@ const CGFloat kSectionHeight = 20.;
 		NSInteger section = [self sectionAtPoint:location];
 		
 		/* If the drag is to the section header, show a rect under the section and passed to delegate a indexPath with the current section and row = numberOfRowsInSection (for the row after the last row i.e. (numberOfRowsInSection - 1 (for the last row) + 1)) */
-		NSInteger rowCount = ((NSArray *)sectionsRows[section]).count;
+		NSInteger rowCount = _sectionsRows[section].count;
 		indexPath = [NSIndexPath indexPathWithSection:section
 												  row:rowCount];
 	}
@@ -1244,11 +1272,11 @@ const CGFloat kSectionHeight = 20.;
 
 - (void)closureButtonDidClicked:(NSInteger)state forSectionView:(TableViewSection *)sectionView
 {
-	NSInteger section = [sectionsView indexOfObject:sectionView];
+	NSInteger section = [_sectionsView indexOfObject:sectionView];
 	TableViewSectionState sectionState = (state == NSOffState)? TableViewSectionStateClose : TableViewSectionStateOpen;
 	sectionsState[section] = sectionState;
 	
-	NSArray * sectionCells = (NSArray *)sectionsRows[section];
+	NSArray * sectionCells = _sectionsRows[section];
 	for (TableViewCell * cell in sectionCells) {
 		/* If section closed (state == NSOffState), hide all rows from the section, else show cells (don't hide) */
 		cell.hidden = (state == NSOffState);
@@ -1308,7 +1336,7 @@ const CGFloat kSectionHeight = 20.;
 	id sender = control.superview;
 	if ([sender isKindOfClass:[TableViewSection class]]) {
 		TableViewSection * sectionView = (TableViewSection *)sender;
-		NSInteger section = [sectionsView indexOfObject:sectionView];
+		NSInteger section = [_sectionsView indexOfObject:sectionView];
 		if ([_delegate respondsToSelector:@selector(tableView:setString:forSection:)])
 			[_delegate tableView:self setString:fieldEditor.string forSection:section];
 		

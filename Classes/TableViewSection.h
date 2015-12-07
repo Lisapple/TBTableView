@@ -28,8 +28,8 @@
 	NSMutableArray * targets;
 }
 
-@property (nonatomic, readonly) NSButton * closureButton;
-@property (nonatomic, readonly) TableViewSectionTextField * textField;
+@property (nonatomic, readonly, strong) NSButton * closureButton;
+@property (nonatomic, readonly, strong) TableViewSectionTextField * textField;
 
 @property (nonatomic, strong) NSString * title;
 @property (nonatomic, assign) BOOL showsClosureButton;

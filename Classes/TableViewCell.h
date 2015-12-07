@@ -15,12 +15,11 @@
 @interface TableViewCellTextField : NSTextField
 @end
 
-enum _TableViewCellStyle {
+typedef NS_ENUM(NSUInteger, TableViewCellStyle) {
 	TableViewCellStyleDefault
 };
-typedef enum _TableViewCellStyle TableViewCellStyle;
 
-enum _TableViewCellBackgroundColorStyle {
+typedef NS_ENUM(NSUInteger, TableViewCellBackgroundColorStyle) {
 	TableViewCellBackgroundColorStyleWhite = 1,
 	TableViewCellBackgroundColorStyleGray,
 	TableViewCellBackgroundColorStyleWhiteGradient,
@@ -29,13 +28,11 @@ enum _TableViewCellBackgroundColorStyle {
 	TableViewCellBackgroundColorStyleSystemTint,
 	TableViewCellBackgroundColorStyleSystemTintGradient
 };
-typedef enum _TableViewCellBackgroundColorStyle TableViewCellBackgroundColorStyle;
 
-enum _TableViewCellSelectedColorStyle {
+typedef NS_ENUM(NSUInteger, TableViewCellSelectedColorStyle) {
 	TableViewCellSelectedColorDefault,
 	TableViewCellSelectedColorDefaultGradient
 };
-typedef enum _TableViewCellSelectedColorStyle TableViewCellSelectedColorStyle;
 
 @interface TableViewCell : NSView
 {
@@ -69,6 +66,8 @@ typedef enum _TableViewCellSelectedColorStyle TableViewCellSelectedColorStyle;
 @property (nonatomic, assign) TableViewCellBackgroundColorStyle colorStyle;
 @property (nonatomic, assign) TableViewCellSelectedColorStyle selectedColorStyle;
 
+- (instancetype)initWithFrame:(NSRect)frameRect UNAVAILABLE_ATTRIBUTE;
+- (instancetype)initWithCoder:(NSCoder *)coder UNAVAILABLE_ATTRIBUTE;
 - (instancetype)initWithStyle:(TableViewCellStyle)cellStyle reusableIdentifier:(NSString *)cellID NS_DESIGNATED_INITIALIZER;
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated;

@@ -10,26 +10,23 @@
 
 @class TableView;
 
-enum _TableViewCellEvent {
+typedef NS_ENUM(NSUInteger, TableViewCellEvent) {
 	TableViewCellEventMouseEntered = 1,
 	TableViewCellEventMouseExited = 1 << 1,
 };
-typedef enum _TableViewCellEvent TableViewCellEvent;
 
-enum _TableViewSectionState {
+typedef NS_ENUM(NSUInteger, TableViewSectionState) {
 	TableViewSectionStateOpen = 0,
 	TableViewSectionStateClose,
 	TableViewSectionStateUnknown
 };
-typedef enum _TableViewSectionState TableViewSectionState;
 
-enum _TableViewPosition {
+typedef NS_ENUM(NSUInteger, TableViewPosition) {
 	TableViewPositionNone = 0,
 	TableViewPositionTop,
 	TableViewPositionMiddle,
 	TableViewPositionBottom
 };
-typedef enum _TableViewPosition TableViewPosition;
 
 @protocol TableViewDelegate <NSObject>
 

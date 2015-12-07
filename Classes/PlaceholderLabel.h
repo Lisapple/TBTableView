@@ -8,6 +8,11 @@
 
 #import <AppKit/AppKit.h>
 
+#define USE_CORE_TEXT 1
+#if USE_CORE_TEXT
+#  import <CoreText/CoreText.h>
+#endif
+
 @interface PlaceholderLabel : NSView
 
 @property (nonatomic, copy) NSString * title;

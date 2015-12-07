@@ -34,27 +34,6 @@
 // @TODO: permettre de sélectionner plusieurs cellules
 
 @interface TableView : NSScrollView <NSTextFieldDelegate, NSMenuDelegate, TableViewSectionClosureButtonProtocol>
-{
-	NSInteger numberOfSections, oldNumberOfSections;
-	NSInteger * numberOfRows;// An array with the number rows into each section (the count of the array is equal to "numberOfSections")
-	NSInteger totalHeight;// The total height of all rows
-	NSMutableArray * sectionsRows;// All the rows into an array for each section (-> array of array)
-	NSArray * sectionsView;// All section views
-	CGFloat * sectionsHeight;// The size of the section (with all rows and the section header), include the height of the separator
-	CGFloat * rowsHeight;// Height of all rows
-	BOOL * showsClosureButtons;
-	TableViewSectionState * sectionsState;
-	
-	NSInteger selectedSection;
-	NSIndexPath * selectedIndexPath;
-	
-	_TableViewSelectionView * draggingView;
-	
-	unsigned int * sectionsEvents;
-	unsigned int * cellsEvents;
-	
-	BOOL isTrackingSections, isTrackingCells;
-}
 
 @property (nonatomic, strong) NSObject <TableViewDelegate> * delegate;
 @property (nonatomic, strong) NSObject <TableViewDataSource> * dataSource;

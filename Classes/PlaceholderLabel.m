@@ -74,15 +74,27 @@
 	CGContextRef textContextRef = CGBitmapContextCreate(NULL, (size_t)width, (size_t)height,
 														8, 0,
 														colorSpace, kCGImageAlphaPremultipliedLast);
+	CGFloat fontHeight = 20.;
 	
+#define USE_CORE_TEXT 1
+#if USE_CORE_TEXT
+	NSFont * font = [NSFont systemFontOfSize:fontHeight];
+	NSDictionary * attributes = @{ NSFontAttributeName : font, NSForegroundColorAttributeName : [NSColor whiteColor] };
+	NSAttributedString * string = [[NSAttributedString alloc] initWithString:_title attributes:attributes];
+	CTLineRef line = CTLineCreateWithAttributedString((__bridge CFAttributedStringRef)string);
+	
+	CGRect bounds = CTLineGetBoundsWithOptions(line, 0);
+	CGContextTranslateCTM(textContextRef,
+						  ceilf((width - bounds.size.width) / 2),
+						  ceilf((height - bounds.size.height) / 2) + 2);
+	CTLineDraw(line, textContextRef);
+#else
 	const CGFloat text_components[4] = { 1., 1., 1., 1. };
 	CGColorRef color = CGColorCreate(colorSpace, text_components);
 	CGContextSetFillColorWithColor(textContextRef, color);
 	CGColorRelease(color);
-	
 	CGColorSpaceRelease(colorSpace);
 	
-	CGFloat fontHeight = 20.;
 	NSString * systemFontName = [NSFont systemFontOfSize:10.].fontName;
 	CGContextSelectFont(textContextRef, systemFontName.UTF8String, fontHeight, kCGEncodingMacRoman);
 	
@@ -102,6 +114,7 @@
 	CGContextSetTextDrawingMode(textContextRef, kCGTextFill);
 	
 	CGContextShowTextAtPoint(textContextRef, textX, textY, string, length);
+#endif
 	
 	CGImageRef textImageRef = CGBitmapContextCreateImage(textContextRef);
 	if (textContextRef) CGContextRelease(textContextRef);
