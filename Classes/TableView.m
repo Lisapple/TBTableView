@@ -279,13 +279,13 @@ const CGFloat kSectionHeight = 20.;
 		free(numberOfRows); numberOfRows = NULL; }
 	numberOfRows = (NSInteger *)malloc(MAX(1, numberOfSections) * sizeof(NSInteger));
 	
-	NSArray * sectionsTitle = [_dataSource titlesForSectionsInTableView:self];
+	NSArray <NSString *> * sectionsTitle = [_dataSource titlesForSectionsInTableView:self];
 	
 	NSInteger totalOfRows = 0;
 	_sectionsRows = [[NSMutableArray alloc] initWithCapacity:numberOfSections];
 	for (int section = 0; section < numberOfSections; section++) {
 		NSInteger rowCount = [_dataSource tableView:self numberOfRowsInSection:section];
-		NSMutableArray * sectionRows = [[NSMutableArray alloc] initWithCapacity:numberOfSections];
+		NSMutableArray <TableViewCell *> * sectionRows = [[NSMutableArray alloc] initWithCapacity:numberOfSections];
 		
 		for (int row = 0; row < rowCount; row++) {
 			NSIndexPath * indexPath = [[NSIndexPath alloc] initWithSection:section row:row];
@@ -293,7 +293,7 @@ const CGFloat kSectionHeight = 20.;
 			[sectionRows addObject:cell];
 		}
 		
-		[_sectionsRows addObject:(NSArray *)sectionRows];
+		[_sectionsRows addObject:sectionRows];
 		
 		totalOfRows += rowCount;
 		numberOfRows[section] = rowCount;
@@ -313,9 +313,8 @@ const CGFloat kSectionHeight = 20.;
 	
 	/* Remove sections and cells from documentView */
 	NSArray * subviewsCopy = [((NSView *)self.documentView).subviews copy];
-	for (NSView * subview in subviewsCopy) {
+	for (NSView * subview in subviewsCopy)
 		[subview removeFromSuperview];
-	}
 	
 	BOOL respondsToRowHeight = ([_dataSource respondsToSelector:@selector(tableView:rowHeightAtIndex:)]);
 	
@@ -334,7 +333,7 @@ const CGFloat kSectionHeight = 20.;
 	}
 	
 	// @TODO: merge this code block with the upper one
-	NSMutableArray * sectionsView = [[NSMutableArray alloc] initWithCapacity:numberOfSections];
+	NSMutableArray <TableViewSection *> * sectionsView = [[NSMutableArray alloc] initWithCapacity:numberOfSections];
 	NSInteger section = 0, row = 0;
 	CGFloat offsetY = 0., sectionHeight = 0.;
 	totalHeight = 0.;
@@ -397,7 +396,7 @@ const CGFloat kSectionHeight = 20.;
 		
 		section++;
 	}
-	_sectionsView = (NSArray *)sectionsView;
+	_sectionsView = sectionsView;
 	
 	/* Add section headers at last to set sections upper cells */
 	for (TableViewSection * sectionView in _sectionsView) {
@@ -527,6 +526,8 @@ const CGFloat kSectionHeight = 20.;
 	rowsHeight[rowIndex] = rowHeight;
 	sectionsHeight[indexPath.section] += (rowHeight - oldRowHeight);
 	
+	[_dataSource tableView:self cellForIndexPath:indexPath];
+	
 	[self updateContentLayout];
 }
 
@@ -588,7 +589,7 @@ const CGFloat kSectionHeight = 20.;
 {
 	for (int section = 0; section < numberOfSections; section++) {
 		TableViewSection * sectionView = _sectionsView[section];
-		NSArray * trackingAreasCopy = [sectionView.trackingAreas copy];
+		NSArray <NSTrackingArea *> * trackingAreasCopy = [sectionView.trackingAreas copy];
 		for (NSTrackingArea * trackingArea in trackingAreasCopy)
 			[sectionView removeTrackingArea:trackingArea];
 	}
@@ -616,7 +617,7 @@ const CGFloat kSectionHeight = 20.;
 			/* Add tracking rect for each cell */
 			cellsEvents = (unsigned int *)malloc(totalOfRows * sizeof(unsigned int));
 			NSInteger section = 0, totalRow = 0;
-			for (NSArray * sectionRows in _sectionsRows) {
+			for (NSArray <TableViewCell *> * sectionRows in _sectionsRows) {
 				NSInteger rowIndex = 0; // The row index of the current section
 				for (TableViewCell * cell in sectionRows) {
 					/* Ask the delegate before tracking */

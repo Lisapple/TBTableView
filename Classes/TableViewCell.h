@@ -52,8 +52,8 @@ typedef NS_ENUM(NSUInteger, TableViewCellSelectedColorStyle) {
 	float selectionAlphaValue;
 }
 
-@property (nonatomic, readonly) NSImageView * imageView;
-@property (nonatomic, readonly) NSTextField * textField;
+@property (readonly) NSImageView * imageView;
+@property (readonly) NSTextField * textField;
 
 @property (nonatomic, strong) NSString * title;
 @property (nonatomic, strong) NSAttributedString * attributedTitle;
@@ -61,7 +61,8 @@ typedef NS_ENUM(NSUInteger, TableViewCellSelectedColorStyle) {
 
 @property (nonatomic, assign, getter = isEditable) BOOL editable;
 
-@property (nonatomic, copy) NSColor * backgroundColor, * selectedBackgroundColor;
+@property (nonatomic, copy) NSColor * backgroundColor;
+@property (copy) NSColor * selectedBackgroundColor;
 @property (nonatomic, assign, getter = isSelected) BOOL selected;
 
 @property (nonatomic, assign) TableViewCellBackgroundColorStyle colorStyle;

@@ -50,13 +50,6 @@
 
 @implementation TableViewCell
 
-@synthesize imageView =_imageView, textField = _textField;
-@synthesize title = _title, image = _image, selectedImage = _selectedImage;
-@synthesize editable = _editable;
-@synthesize backgroundColor = _backgroundColor, selectedBackgroundColor = _selectedBackgroundColor;
-@synthesize selected = _selected;
-@synthesize colorStyle = _colorStyle, selectedColorStyle = _selectedColorStyle;
-
 - (instancetype)initWithStyle:(TableViewCellStyle)cellStyle reusableIdentifier:(NSString *)cellID
 {
 	NSRect frame = NSMakeRect(0., 0., 100., 17.);
@@ -133,7 +126,7 @@
 	
 	_imageView.hidden = (image == nil);
 	NSRect rect = _textField.frame;
-	rect.origin.x = (image == nil)? 10.: (4. * 2. + 24.);// Fix to 4px left if no image, else fix 4px to the imageView
+	rect.origin.x = (image == nil)? 10.: (4. * 2. + 24.); // Fix to 4px left if no image, else fix 4px to the imageView
 	_textField.frame = rect;
 }
 
@@ -186,8 +179,8 @@
 			}
 			case TableViewCellBackgroundColorStyleSystemTintGradient: {
 				NSColor * systemTintColor = [NSColor colorForControlTint:[NSColor currentControlTint]];
-				backgroundGradient = [[NSGradient alloc] initWithStartingColor:[systemTintColor highlightWithLevel:0.4]
-																   endingColor:[systemTintColor highlightWithLevel:0.2]];
+				backgroundGradient = [[NSGradient alloc] initWithStartingColor:[systemTintColor highlightWithLevel:0.2]
+																   endingColor:[systemTintColor shadowWithLevel:0.2]];
 				break;
 			}
 		}
@@ -198,19 +191,19 @@
 - (void)setSelectedColorStyle:(TableViewCellSelectedColorStyle)selectedColorStyle
 {
 	if (selectedColorStyle != _selectedColorStyle) {
-		
+		NSColor * highlightColor = [NSColor selectedControlColor];
 		switch (selectedColorStyle) {
 			default:
 			case TableViewCellSelectedColorDefault:
-				_selectedBackgroundColor = [NSColor lightGrayColor];
+				_selectedBackgroundColor = highlightColor;
 				break;
 			case TableViewCellSelectedColorDefaultGradient: {
-				NSColor * highlightColor = [NSColor selectedTextBackgroundColor];
-				selectedBackgroundGradient = [[NSGradient alloc] initWithStartingColor:[highlightColor highlightWithLevel:0.2]
+				selectedBackgroundGradient = [[NSGradient alloc] initWithStartingColor:[highlightColor shadowWithLevel:0.1]
 																		   endingColor:[highlightColor shadowWithLevel:0.2]];
 				
-				inactiveSelectedBackgroundGradient = [[NSGradient alloc] initWithStartingColor:[NSColor colorWithCalibratedWhite:0.8 alpha:1.]
-																				   endingColor:[NSColor colorWithCalibratedWhite:0.7 alpha:1.]];
+				NSColor * inactiveColor = [NSColor secondarySelectedControlColor];
+				inactiveSelectedBackgroundGradient = [[NSGradient alloc] initWithStartingColor:inactiveColor
+																				   endingColor:[inactiveColor shadowWithLevel:0.1]];
 				break;
 			}
 		}
@@ -281,8 +274,7 @@
 			NSRectFill(dirtyRect);
 		}
 		
-		if (textColor)
-			self.textField.textColor = (textColor)? [textColor copy]: [NSColor blackColor];
+		self.textField.textColor = textColor ?: [NSColor blackColor];
 	}
 }
 

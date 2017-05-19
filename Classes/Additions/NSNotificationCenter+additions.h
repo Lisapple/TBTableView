@@ -6,8 +6,6 @@
 //  Copyright (c) 2012 Lis@cintosh. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-
 @interface NSNotificationCenter (additions)
 
 - (void)addObserverForName:(NSString *)name usingBlock:(void (^)(NSNotification * notification))block;

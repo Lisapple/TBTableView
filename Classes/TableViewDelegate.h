@@ -79,7 +79,7 @@ typedef NS_ENUM(NSUInteger, TableViewPosition) {
 @protocol TableViewDataSource <NSObject>
 
 - (NSInteger)numberOfSectionsInTableView:(TableView *)tableView;
-- (NSArray *)titlesForSectionsInTableView:(TableView *)tableView;
+- (NSArray <NSString *> *)titlesForSectionsInTableView:(TableView *)tableView;
 - (NSInteger)tableView:(TableView *)tableView numberOfRowsInSection:(NSInteger)section;
 
 - (TableViewCell *)tableView:(TableView *)tableView cellForIndexPath:(NSIndexPath *)indexPath;

@@ -12,7 +12,7 @@
 
 - (void)insertView:(NSView *)subview atIndex:(NSInteger)index
 {
-	NSArray * subviews = self.subviews;
+	NSArray <NSView *> * subviews = self.subviews;
 	NSInteger newIndex = MIN(index, subviews.count);
 	[self addSubview:subview positioned:NSWindowBelow relativeTo:subviews[newIndex]];
 }
