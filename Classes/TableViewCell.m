@@ -111,7 +111,17 @@
 {
 	_title = title;
 	if (title) {
+		self.attributedTitle = nil;
 		_textField.stringValue = title;
+	}
+}
+
+- (void)setAttributedTitle:(NSAttributedString *)attributedTitle
+{
+	_attributedTitle = attributedTitle;
+	if (attributedTitle) {
+		self.title = nil;
+		_textField.attributedStringValue = attributedTitle;
 	}
 }
 
